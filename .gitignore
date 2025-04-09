@@ -13,6 +13,7 @@ NTUSER.*
 *.ini
 *.LOG1
 *.LOG2
+public/storage/
 
 # ไม่สนใจบางไฟล์/โฟลเดอร์ส่วนตัว
 .ssh/
