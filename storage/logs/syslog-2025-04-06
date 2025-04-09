@@ -1,0 +1,20 @@
+[2025-04-06 01:10:15] local.INFO: User login successful for user_id:1234 from IP 192.168.1.100
+[2025-04-06 01:15:20] local.INFO: Purchase completed successfully transaction_id:56789 item_id:23434500 amount:150.00
+[2025-04-06 01:20:45] local.ERROR: Purchase failed with error_id:10652978 item_id:23434500 user_id:1234 "Payment gateway error"
+[2025-04-06 01:25:10] local.INFO: Purchase completed successfully transaction_id:56790 item_id:09680878 amount:75.50
+[2025-04-06 01:30:30] local.WARNING: Slow database query detected query_time:3.5s table:products
+[2025-04-06 01:35:40] local.INFO: Purchase completed successfully transaction_id:56791 item_id:23434500 amount:150.00
+[2025-04-06 01:40:15] local.ERROR: Status code: 500 "Internal Server Error" url:/api/products request_id:789456
+[2025-04-06 01:45:25] local.INFO: Purchase completed successfully transaction_id:56792 item_id:09680878 amount:75.50
+[2025-04-06 01:50:30] local.INFO: Purchase completed successfully transaction_id:56793 item_id:23434500 amount:150.00
+[2025-04-06 01:55:10] local.ERROR: Error ID: 12321561 "Database connection timeout" host:db-server-01
+[2025-04-06 02:00:45] local.INFO: Purchase completed successfully transaction_id:56794 item_id:09680878 amount:75.50
+[2025-04-06 02:05:20] local.ERROR: Purchase failed with error_id:10652978 item_id:09680878 user_id:5678 "Insufficient funds"
+[2025-04-06 02:10:30] local.INFO: Purchase completed successfully transaction_id:56795 item_id:23434500 amount:150.00
+[2025-04-06 02:15:15] local.ERROR: Status code: 500 "Internal Server Error" url:/api/checkout request_id:789457
+[2025-04-06 02:20:25] local.INFO: Purchase completed successfully transaction_id:56796 item_id:45678901 amount:200.00
+[2025-04-06 02:25:40] local.INFO: User login successful for user_id:5678 from IP 192.168.1.101
+[2025-04-06 02:30:10] local.ERROR: Error ID: 12321561 "Database query failed" query:"SELECT * FROM orders WHERE..."
+[2025-04-06 02:35:20] local.INFO: Purchase completed successfully transaction_id:56797 item_id:23434500 amount:150.00
+[2025-04-06 02:40:45] local.INFO: Purchase completed successfully transaction_id:56798 item_id:23434500 amount:150.00
+[2025-04-06 02:45:30] local.ERROR: Status code: 500 "API rate limit exceeded" url:/api/products/bulk request_id:789458

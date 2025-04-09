@@ -1,0 +1,40 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=app_db
+      - DB_USERNAME=gbtechdev
+      - DB_PASSWORD=secret
+    depends_on:
+      - mysql
+
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: nginx
+  #   ports:
+  #     - "8080:80"
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: gbtechdev 
+      MYSQL_PASSWORD: secret
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:
+  

@@ -1,0 +1,20 @@
+# ไม่ต้องสนใจโฟลเดอร์ของ Windows
+AppData/
+Contacts/
+Downloads/
+Favorites/
+Links/
+Music/
+OneDrive/
+Saved Games/
+Searches/
+Videos/
+NTUSER.*
+*.ini
+*.LOG1
+*.LOG2
+
+# ไม่สนใจบางไฟล์/โฟลเดอร์ส่วนตัว
+.ssh/
+.vscode/
+.docker/

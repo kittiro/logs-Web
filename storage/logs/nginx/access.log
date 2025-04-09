@@ -1,0 +1,5 @@
+2025-04-05 13:22:14 [info] Sample log entry 1 - Application started
+2025-04-05 13:22:14 [info] Sample log entry 2 - User authentication
+2025-04-05 13:22:14 [warning] Sample log entry 3 - Low disk space
+2025-04-05 13:22:14 [error] Sample log entry 4 - Database connection failed
+2025-04-05 13:22:14 [info] Sample log entry 5 - Request processed successfully
