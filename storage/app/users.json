@@ -1,0 +1,8 @@
+[
+    {
+        "username": "admin",
+        "name": "Admin User",
+        "email": "admin@example.com",
+        "password": "$2y$12$7\/N1znzadRw8nlst2t5D5uhSfXY7bnwysXgRgDeCRhIos569BBYFa"
+    }
+]
