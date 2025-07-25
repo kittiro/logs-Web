@@ -1,0 +1,12 @@
+{
+  "name": "logs-web",
+  "version": "1.0.0",
+  "description": "Laravel Log Management System",
+  "scripts": {
+    "build": "./build.sh",
+    "start": "php artisan serve --host=0.0.0.0 --port=$PORT"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
