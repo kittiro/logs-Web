@@ -1,9 +1,15 @@
 {
   "version": 2,
   "functions": {
-    "api/index.php": { "runtime": "vercel-php@0.6.0" }
+    "api/index.php": { 
+      "runtime": "vercel-php@0.6.0"
+    }
   },
   "routes": [
+    {
+      "src": "/(css|js|images)/(.*)",
+      "dest": "/public/$1/$2"
+    },
     {
       "src": "/(.*)",
       "dest": "/api/index.php"
@@ -12,15 +18,17 @@
   "env": {
     "APP_ENV": "production",
     "APP_DEBUG": "false",
-    "APP_URL": "https://your-app.vercel.app",
+    "APP_KEY": "base64:30lXYAojVz0d2xLrsCAqQ547Q00nxGQGnT5CN5drvgw=",
     "APP_CONFIG_CACHE": "/tmp",
-    "APP_EVENTS_CACHE": "/tmp",
+    "APP_EVENTS_CACHE": "/tmp", 
     "APP_PACKAGES_CACHE": "/tmp",
     "APP_ROUTES_CACHE": "/tmp",
     "APP_SERVICES_CACHE": "/tmp",
     "VIEW_COMPILED_PATH": "/tmp",
     "CACHE_DRIVER": "array",
     "LOG_CHANNEL": "stderr",
-    "SESSION_DRIVER": "cookie"
+    "SESSION_DRIVER": "cookie",
+    "DB_CONNECTION": "sqlite",
+    "DB_DATABASE": "/tmp/database.sqlite"
   }
 }
