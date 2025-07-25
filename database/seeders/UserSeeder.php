@@ -10,6 +10,12 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
+        // สร้างฐานข้อมูล SQLite หากไม่มี
+        $dbPath = database_path('database.sqlite');
+        if (!file_exists($dbPath)) {
+            touch($dbPath);
+        }
+
         // ค้นหาผู้ใช้ที่มีอยู่และอัปเดตรหัสผ่าน
         $user = User::where('username', 'admin')->first();
 

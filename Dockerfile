@@ -1,8 +1,8 @@
-# Use PHP-FPM base image
-FROM php:8.4-fpm
+# Use PHP with Apache
+FROM php:8.2-apache
 
-# Install system dependencies
-RUN apt update && apt install -y \
+# Install system dependencies and PHP extensions
+RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
@@ -11,32 +11,34 @@ RUN apt update && apt install -y \
     zip \
     unzip \
     libzip-dev \
-    gnupg \
-    locales \
-    nginx
+    && docker-php-ext-install zip pdo_mysql \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-install zip pdo_mysql
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
 
 # Copy Composer from official image  
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application files
-WORKDIR /var/www
+# Set working directory
+WORKDIR /var/www/html
 
+# Copy application files
 COPY . .
 
-# Install dependencies  
-RUN composer install --no-dev --optimize-autoloader 
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www/storage
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Copy Nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+# Configure Apache DocumentRoot
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Expose ports for Nginx
+# Expose port 80
 EXPOSE 80
-
-# Start Nginx and PHP-FPM
-CMD ["sh", "-c", "php-fpm & nginx -g 'daemon off;'"]
