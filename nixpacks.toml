@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ["php82", "php82Packages.composer"]
+
+[phases.install]
+cmds = ["composer install --no-dev --optimize-autoloader"]
+
+[phases.build]
+cmds = [
+    "mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views",
+    "mkdir -p storage/logs bootstrap/cache",
+    "chmod -R 775 storage bootstrap/cache",
+    "touch /tmp/database.sqlite",
+    "chmod 666 /tmp/database.sqlite"
+]
+
+[start]
+cmd = "php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"
