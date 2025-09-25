@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     sqlite3 \
     libsqlite3-dev \
+    bash \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -27,30 +28,44 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Install dependencies (skip composer.lock if not exists)
-RUN if [ -f composer.lock ]; then \
-        composer install --no-dev --optimize-autoloader; \
-    else \
-        composer install --no-dev --optimize-autoloader --no-scripts; \
-    fi
+# Make build script executable
+RUN chmod +x build.sh
 
-# Create storage directories and set permissions
+# Install dependencies with error handling
+RUN composer install --no-dev --optimize-autoloader --no-interaction || \
+    composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+
+# Run build script for initial setup
+RUN bash build.sh
+
+# Create additional storage directories and set permissions
 RUN mkdir -p storage/framework/{cache,sessions,views} \
     && mkdir -p storage/logs \
+    && mkdir -p storage/app \
     && mkdir -p bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Create SQLite database
-RUN touch /tmp/database.sqlite && chmod 666 /tmp/database.sqlite
+# Set proper ownership for web server
+RUN chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
-# Set environment
+# Set environment variables
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 ENV DB_CONNECTION=sqlite
 ENV DB_DATABASE=/tmp/database.sqlite
+ENV LOG_CHANNEL=stack
+ENV SESSION_DRIVER=cookie
+
+# Create health check script
+RUN echo '#!/bin/bash\ncurl -f http://localhost:$PORT/ || exit 1' > /app/healthcheck.sh \
+    && chmod +x /app/healthcheck.sh
 
 # Expose port
 EXPOSE $PORT
 
-# Start command with setup
-CMD ["sh", "-c", "php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"]
+# Add health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD /app/healthcheck.sh
+
+# Start command with comprehensive setup
+CMD ["sh", "-c", "bash build.sh && php artisan migrate --force && php artisan db:seed --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=$PORT"]

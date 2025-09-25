@@ -29,13 +29,13 @@ if (!file_exists($usersPath)) {
     file_put_contents($usersPath, json_encode($defaultUser, JSON_PRETTY_PRINT));
 }
 
-// Set environment variables for Vercel
+// Set environment variables for Railway deployment
 $_ENV['APP_STORAGE_PATH'] = '/tmp/storage';
 $_ENV['USERS_FILE_PATH'] = $usersPath;
 
-// Set Laravel paths for Vercel
+// Set Laravel paths for API routing
 $_SERVER['SCRIPT_NAME'] = '/api/index.php';
 $_SERVER['SCRIPT_FILENAME'] = __FILE__;
 
-// Forward Vercel requests to Laravel
+// Forward API requests to Laravel
 require __DIR__ . '/../public/index.php';
