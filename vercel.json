@@ -2,12 +2,12 @@
   "version": 2,
   "functions": {
     "api/index.php": { 
-      "runtime": "vercel-php@0.7.0"
+      "runtime": "vercel-php@0.8.0"
     }
   },
   "build": {
     "env": {
-      "NODE_VERSION": "20"
+      "NODEJS_VERSION": "20.x"
     }
   },
   "routes": [
