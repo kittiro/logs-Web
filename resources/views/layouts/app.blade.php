@@ -145,6 +145,11 @@
             background-color: var(--sidebar-hover);
         }
         
+        .sidebar-menu .nav-link.active {
+            background-color: #007bff;
+            color: white !important;
+        }
+        
         .sidebar-menu .nav-link i {
             width: 20px;
             text-align: center;
@@ -179,28 +184,34 @@
                 <div class="sidebar-menu">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logs.index') }}">
-                                <i class="fas fa-file me-2"></i> File
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logs.index') }}">
-                                <i class="fas fa-save me-2"></i> Save
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logs.index') }}">
-                                <i class="fas fa-history me-2"></i> History
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logs.index') }}">
-                                <i class="fas fa-filter me-2"></i> Filters
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard') }}">
+                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                                 <i class="fas fa-chart-pie me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('web-access-logs.*') ? 'active' : '' }}" href="{{ route('web-access-logs.index') }}">
+                                <i class="fas fa-globe me-2"></i> Web Access Logs
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('logs.*') ? 'active' : '' }}" href="{{ route('logs.index') }}">
+                                <i class="fas fa-file-alt me-2"></i> System Logs
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('nginx.*') ? 'active' : '' }}" href="{{ route('nginx.logs') }}">
+                                <i class="fas fa-server me-2"></i> Nginx Logs
+                            </a>
+                        </li>
+                        <hr class="my-2">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('logs.index') }}">
+                                <i class="fas fa-history me-2"></i> Log History
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('logs.index') }}">
+                                <i class="fas fa-download me-2"></i> Export Data
                             </a>
                         </li>
                     </ul>

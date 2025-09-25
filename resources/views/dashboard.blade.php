@@ -2,44 +2,178 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-2xl font-bold mb-0">Log Analytics Dashboard</h2>
-        <a href="{{ route('logs.index') }}" class="btn btn-primary">
-            <i class="fas fa-arrow-left me-1"></i> Return to Logs
-        </a>
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="text-2xl font-bold mb-0">Log Analytics Dashboard</h2>
+                <a href="{{ route('logs.index') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-1"></i> Return to Logs
+                </a>
+            </div>
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center py-5">
+                    <h1 class="display-4 mb-3">
+                        <i class="fas fa-chart-line me-3"></i>
+                        ระบบติดตามการใช้งานเว็บไซต์
+                    </h1>
+                    <p class="lead mb-4">
+                        แดชบอร์ดสำหรับติดตามและวิเคราะห์การใช้งานเว็บไซต์แบบเรียลไทม์
+                    </p>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="border-end border-light">
+                                <h3><i class="fas fa-users"></i></h3>
+                                <small>ผู้เข้าใช้งาน</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border-end border-light">
+                                <h3><i class="fas fa-shield-alt"></i></h3>
+                                <small>ความปลอดภัย</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border-end border-light">
+                                <h3><i class="fas fa-chart-bar"></i></h3>
+                                <small>สถิติการใช้งาน</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div>
+                                <h3><i class="fas fa-clock"></i></h3>
+                                <small>เรียลไทม์</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Quick Stats Cards -->
     <div class="row mb-4">
-        <!-- Login Activity (formerly Purchase Status) -->
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="text-primary mb-2">
+                        <i class="fas fa-sign-in-alt fa-2x"></i>
+                    </div>
+                    <h4 class="text-primary">{{ $logData['purchaseStatus']['totalEvents'] }}</h4>
+                    <p class="text-muted mb-0">การเข้าสู่ระบบ</p>
+                    <small class="text-success">
+                        <i class="fas fa-arrow-up"></i> วันนี้
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="text-success mb-2">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                    <h4 class="text-success">{{ $logData['purchaseSuccessRate']['succeeded'] }}</h4>
+                    <p class="text-muted mb-0">การทำงานสำเร็จ</p>
+                    <small class="text-success">
+                        <i class="fas fa-arrow-up"></i> ปกติ
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="text-warning mb-2">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <h4 class="text-warning">{{ $logData['topErrors']['totalEvents'] }}</h4>
+                    <p class="text-muted mb-0">ข้อผิดพลาด</p>
+                    <small class="text-warning">
+                        <i class="fas fa-minus"></i> ต้องติดตาม
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="text-info mb-2">
+                        <i class="fas fa-globe fa-2x"></i>
+                    </div>
+                    <h4 class="text-info">{{ $logData['bestSellingItems']['totalEvents'] }}</h4>
+                    <p class="text-muted mb-0">การเข้าถึงทั้งหมด</p>
+                    <small class="text-info">
+                        <i class="fas fa-arrow-up"></i> รายวัน
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Charts Section -->
+    <div class="row mb-4">
+        <!-- Login Activity Chart -->
         <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Login Activity</h5>
-                    <i class="fas fa-info-circle text-muted"></i>
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">
+                                <i class="fas fa-sign-in-alt text-primary me-2"></i>
+                                การเข้าสู่ระบบรายชั่วโมง
+                            </h5>
+                            <small class="text-muted">ติดตามการเข้าสู่ระบบของผู้ใช้งาน</small>
+                        </div>
+                        <span class="badge bg-primary">{{ $logData['purchaseStatus']['totalEvents'] }} ครั้ง</span>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="text-muted small mb-2">
-                        {{ $logData['purchaseStatus']['totalEvents'] }} events
-                        <span class="float-end">{{ $logData['purchaseStatus']['timeRange'] }}</span>
+                    <div class="text-muted small mb-3 d-flex justify-content-between">
+                        <span><i class="fas fa-clock me-1"></i> ช่วงเวลา: {{ $logData['purchaseStatus']['timeRange'] }}</span>
+                        <span class="text-success"><i class="fas fa-check-circle me-1"></i> สำเร็จ</span>
+                        <span class="text-danger"><i class="fas fa-times-circle me-1"></i> ล้มเหลว</span>
                     </div>
                     <canvas id="purchaseStatusChart" height="200"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Purchase Success Rate -->
+        <!-- System Status Chart -->
         <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Purchase Success Rate</h5>
-                    <i class="fas fa-info-circle text-muted"></i>
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">
+                                <i class="fas fa-heartbeat text-success me-2"></i>
+                                สถานะระบบ
+                            </h5>
+                            <small class="text-muted">อัตราความสำเร็จของระบบ</small>
+                        </div>
+                        <span class="badge bg-success">{{ $logData['purchaseSuccessRate']['totalEvents'] }} รายการ</span>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="text-muted small mb-2">
-                        {{ $logData['purchaseSuccessRate']['totalEvents'] }} events
-                        <span class="float-end">{{ $logData['purchaseSuccessRate']['timeRange'] }}</span>
+                    <div class="text-muted small mb-3">
+                        <i class="fas fa-info-circle me-1"></i> 
+                        สัดส่วนการทำงานที่สำเร็จต่อล้มเหลว
                     </div>
                     <canvas id="purchaseSuccessRateChart" height="200"></canvas>
+                    <div class="row text-center mt-3">
+                        <div class="col-6">
+                            <div class="text-success">
+                                <strong>{{ $logData['purchaseSuccessRate']['succeeded'] }}</strong>
+                                <br><small>สำเร็จ</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-danger">
+                                <strong>{{ $logData['purchaseSuccessRate']['failed'] }}</strong>
+                                <br><small>ล้มเหลว</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,21 +1,24 @@
-# ไม่ต้องสนใจโฟลเดอร์ของ Windows
-AppData/
-Contacts/
-Downloads/
-Favorites/
-Links/
-Music/
-OneDrive/
-Saved Games/
-Searches/
-Videos/
-NTUSER.*
-*.ini
-*.LOG1
-*.LOG2
-public/storage/
-
-# ไม่สนใจบางไฟล์/โฟลเดอร์ส่วนตัว
-.ssh/
-.vscode/
-.docker/
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+docker-compose.override.yml
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+/storage/logs/*.log
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/bootstrap/cache/*.php
+cookies.txt
+ngrok.log
+database/database.sqlite

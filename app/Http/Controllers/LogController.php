@@ -9,6 +9,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LogController extends Controller
 {
+    public function __construct()
+    {
+        // ปิด middleware auth ชั่วคราวเพื่อทดสอบ
+        // $this->middleware('auth');
+    }
+
     public function index()
     {
         $logPath = storage_path('logs');

@@ -13,6 +13,12 @@ Route::get('/', function () {
     return redirect('/login');
 })->middleware('guest');
 
+// Test route without auth for debugging
+Route::get('/test-logs', function() {
+    return response(file_get_contents(public_path('logs.html')), 200)
+        ->header('Content-Type', 'text/html');
+})->name('test.logs');
+
 // ใช้ Auth Routes (แค่เรียกครั้งเดียว)
 Auth::routes();
 
@@ -23,16 +29,17 @@ Route::post('login', [LoginController::class, 'login'])->name('login.submit');
 // Route สำหรับ Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Route สำหรับหน้าจัดการ Log (จะเห็นเฉพาะผู้ที่ล็อกอินแล้ว)
+// Route สำหรับหน้าจัดการ Log (ปิด auth ชั่วคราวเพื่อทดสอบ)
+Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+
+// Route สำหรับหน้า Dashboard หรือหน้าป้องกัน (ปิด auth ชั่วคราวเพื่อทดสอบ)
+Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 Route::middleware('auth')->group(function () {
-    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
     Route::get('/logs/download/{filename}', [LogController::class, 'download'])->name('logs.download');
     Route::get('/logs/checksum/{filename}', [LogController::class, 'checksum'])->name('logs.checksum');
     Route::get('/logs/checksum-all', [LogController::class, 'checksumAll'])->name('logs.checksum.all');
     Route::get('/logs/history', [LogController::class, 'index'])->name('log-history');
-    
-    // Route สำหรับหน้า Dashboard หรือหน้าป้องกัน
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Nginx logs routes
     Route::get('/nginx-logs', [NginxLogController::class, 'show'])->name('nginx.logs');
@@ -40,4 +47,9 @@ Route::middleware('auth')->group(function () {
     
     // File preview route
     Route::post('/file-preview', [FilePreviewController::class, 'preview'])->name('file.preview');
+    
+    // Web Access Logs routes
+    Route::get('/web-access-logs', [App\Http\Controllers\WebAccessLogController::class, 'index'])->name('web-access-logs.index');
+    Route::get('/web-access-logs/download/{date?}', [App\Http\Controllers\WebAccessLogController::class, 'download'])->name('web-access-logs.download');
+    Route::get('/web-access-logs/stats', [App\Http\Controllers\WebAccessLogController::class, 'stats'])->name('web-access-logs.stats');
 });

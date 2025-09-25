@@ -6,7 +6,12 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>Nginx Logs</span>
+                    <div class="d-flex align-items-center">
+                        <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary btn-sm me-3">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                        </a>
+                        <span>Nginx Logs</span>
+                    </div>
                     <a href="{{ route('nginx.download') }}" class="btn btn-primary">Download Full Log</a>
                 </div>
 

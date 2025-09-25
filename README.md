@@ -1,73 +1,206 @@
-HEAD
-=======
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# WebManga Demo - Log Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive web-based log management system built with Laravel, featuring real-time analytics dashboard and compliance with Computer Act requirements.
 
-## About Laravel
+## 🌟 Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 📊 Analytics Dashboard
+- Real-time log statistics and monitoring
+- Interactive charts and graphs
+- System status tracking
+- Error monitoring and alerts
+- Thai language interface
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 📁 Log Management
+- View and manage all log files
+- Download log files with integrity verification
+- SHA256 checksum validation
+- File preview functionality
+- Search and filter capabilities
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🔐 Security & Compliance
+- Computer Act compliant logging
+- User authentication system
+- Secure file access controls
+- Web access logging middleware
 
-## Learning Laravel
+### 🎨 Modern UI/UX
+- Responsive Bootstrap design
+- Dark/Light theme toggle
+- Mobile-friendly interface
+- Intuitive navigation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Live Demo
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Visit the live demo: [https://webmanga-demo.loca.lt/dashboard](https://webmanga-demo.loca.lt/dashboard)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Demo Features:
+- **Dashboard**: Analytics and system overview
+- **Log Management**: File management interface
+- **Web Access Logs**: Traffic monitoring
+- **Return to Logs**: Easy navigation between sections
 
-## Laravel Sponsors
+## 🛠️ Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Prerequisites
+- PHP 8.1+
+- Composer
+- Node.js & NPM (optional, for asset compilation)
 
-### Premium Partners
+### Quick Start
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/logs-Web.git
+   cd logs-Web
+   ```
 
-## Contributing
+2. **Install dependencies**
+   ```bash
+   composer install
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-## Code of Conduct
+4. **Database setup**
+   ```bash
+   touch database/database.sqlite
+   php artisan migrate
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Create admin user**
+   ```bash
+   php artisan tinker
+   User::create(['name' => 'Admin', 'email' => 'admin@example.com', 'password' => Hash::make('password')]);
+   ```
 
-## Security Vulnerabilities
+6. **Start the server**
+   ```bash
+   php artisan serve --host=0.0.0.0 --port=8080
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. **Access the application**
+   - Dashboard: `http://localhost:8080/dashboard`
+   - Log Management: `http://localhost:8080/logs`
 
-## License
+## 📁 Project Structure
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# logs-web" 
-"# logs-web" 
-"# logs-Web" 
-0f4e701 (first commit)
-"# logs-Web" 
+```
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── DashboardController.php      # Analytics dashboard
+│   │   ├── LogController.php            # Log file management
+│   │   └── WebAccessLogController.php   # Web access logging
+│   └── Http/Middleware/
+│       └── WebAccessLogger.php          # Access logging middleware
+├── resources/views/
+│   ├── dashboard.blade.php              # Main dashboard
+│   ├── logs/                           # Log management views
+│   └── layouts/app.blade.php           # Main layout
+├── storage/logs/                       # Log files storage
+├── DEMO_GUIDE.md                       # Demo instructions
+├── DEMO_SCRIPT.md                      # Demo script
+└── RAILWAY_DEPLOYMENT.md               # Deployment guide
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+```env
+APP_NAME="WebManga Demo"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8080
+
+DB_CONNECTION=sqlite
+DB_DATABASE=/path/to/database.sqlite
+
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
+```
+
+### Web Access Logging
+The system automatically logs all web access through the `WebAccessLogger` middleware:
+- IP addresses and user agents
+- Request timestamps and methods
+- Response status codes
+- Computer Act compliance
+
+## 🚀 Deployment
+
+### Railway (Recommended)
+1. Connect your GitHub repository to Railway
+2. Set environment variables in Railway dashboard
+3. Deploy automatically on push
+
+See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for detailed instructions.
+
+### Manual Deployment
+1. Upload files to your server
+2. Configure web server (Apache/Nginx)
+3. Set proper file permissions
+4. Configure environment variables
+
+## 📊 Usage
+
+### Dashboard Analytics
+- View real-time system statistics
+- Monitor login activities and errors
+- Track web access patterns
+- Analyze system performance
+
+### Log Management
+- Browse all log files with metadata
+- Download files with integrity verification
+- Preview file contents
+- Search and filter by various criteria
+
+### Web Access Monitoring
+- Track visitor statistics
+- Monitor suspicious activities
+- Generate compliance reports
+- Export access logs
+
+## 🔒 Security Features
+
+- **Authentication**: Laravel's built-in authentication
+- **Authorization**: Role-based access control
+- **Logging**: Comprehensive audit trails
+- **Validation**: Input sanitization and validation
+- **CSRF Protection**: Cross-site request forgery protection
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is open-sourced software licensed under the [MIT license](LICENSE).
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue on GitHub
+- Check the [DEMO_GUIDE.md](DEMO_GUIDE.md) for usage instructions
+- Review [LOGGING_SYSTEM.md](LOGGING_SYSTEM.md) for technical details
+
+## 🎯 Roadmap
+
+- [ ] Advanced analytics and reporting
+- [ ] Real-time notifications
+- [ ] API endpoints for external integration
+- [ ] Multi-language support
+- [ ] Advanced user management
+- [ ] Log retention policies
+
+---
+
+**Built with ❤️ using Laravel and modern web technologies**
