@@ -77,6 +77,9 @@
         </div>
     </div>
 </div>
+
+<!-- File Preview Component -->
+@include('components.file-preview')
 @endsection
 
 @push('scripts')

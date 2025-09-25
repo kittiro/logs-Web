@@ -35,6 +35,9 @@ Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 // Route สำหรับหน้า Dashboard หรือหน้าป้องกัน (ปิด auth ชั่วคราวเพื่อทดสอบ)
 Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+// File preview route (ปิด auth ชั่วคราวเพื่อทดสอบ)
+Route::post('/file-preview', [FilePreviewController::class, 'preview'])->name('file.preview');
+
 Route::middleware('auth')->group(function () {
     Route::get('/logs/download/{filename}', [LogController::class, 'download'])->name('logs.download');
     Route::get('/logs/checksum/{filename}', [LogController::class, 'checksum'])->name('logs.checksum');
@@ -44,9 +47,6 @@ Route::middleware('auth')->group(function () {
     // Nginx logs routes
     Route::get('/nginx-logs', [NginxLogController::class, 'show'])->name('nginx.logs');
     Route::get('/download-nginx-log', [NginxLogController::class, 'download'])->name('nginx.download');
-    
-    // File preview route
-    Route::post('/file-preview', [FilePreviewController::class, 'preview'])->name('file.preview');
     
     // Web Access Logs routes
     Route::get('/web-access-logs', [App\Http\Controllers\WebAccessLogController::class, 'index'])->name('web-access-logs.index');
