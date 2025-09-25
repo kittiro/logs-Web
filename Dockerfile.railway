@@ -12,12 +12,14 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     sqlite3 \
     libsqlite3-dev \
+    pkg-config \
     bash \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_sqlite zip mbstring exif pcntl bcmath gd
+# Install PHP extensions with proper SQLite support
+RUN docker-php-ext-configure pdo_sqlite --with-pdo-sqlite \
+    && docker-php-ext-install pdo pdo_sqlite zip mbstring exif pcntl bcmath gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

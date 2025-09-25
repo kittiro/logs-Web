@@ -29,7 +29,7 @@ if (!file_exists($usersPath)) {
     file_put_contents($usersPath, json_encode($defaultUser, JSON_PRETTY_PRINT));
 }
 
-// Set environment variables for Railway deployment
+// Set environment variables for cloud deployment (Railway/Render)
 $_ENV['APP_STORAGE_PATH'] = '/tmp/storage';
 $_ENV['USERS_FILE_PATH'] = $usersPath;
 

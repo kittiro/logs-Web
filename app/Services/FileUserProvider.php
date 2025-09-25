@@ -13,7 +13,7 @@ class FileUserProvider implements UserProvider
 
     public function __construct()
     {
-        // Use environment variable for Railway compatibility
+        // Use environment variable for deployment compatibility (Railway/Render)
         $this->usersFile = $_ENV['USERS_FILE_PATH'] ?? storage_path('app/users.json');
         $this->ensureUsersFileExists();
     }

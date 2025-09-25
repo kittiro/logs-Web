@@ -1,0 +1,60 @@
+FROM php:8.2-cli
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libzip-dev \
+    sqlite3 \
+    libsqlite3-dev \
+    pkg-config \
+    bash \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions with proper SQLite support
+RUN docker-php-ext-configure pdo_sqlite --with-pdo-sqlite \
+    && docker-php-ext-install pdo pdo_sqlite zip mbstring exif pcntl bcmath gd
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /opt/render/project/src
+
+# Copy application files
+COPY . .
+
+# Make build script executable
+RUN chmod +x build-render.sh
+
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Run build script for initial setup
+RUN bash build-render.sh
+
+# Set environment variables for Render
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+ENV DB_CONNECTION=sqlite
+ENV DB_DATABASE=/opt/render/project/src/database/database.sqlite
+ENV LOG_CHANNEL=stack
+ENV SESSION_DRIVER=cookie
+ENV APP_STORAGE_PATH=/opt/render/project/src/storage
+ENV USERS_FILE_PATH=/opt/render/project/src/storage/app/users.json
+
+# Expose port
+EXPOSE $PORT
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:$PORT/ || exit 1
+
+# Start command for Render
+CMD ["sh", "-c", "php artisan migrate --force && php artisan db:seed --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=$PORT"]

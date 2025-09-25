@@ -1,18 +1,49 @@
 services:
   - type: web
-    name: logs-web
+    name: webmanga-demo
     env: php
     plan: free
-    buildCommand: composer install --no-dev --optimize-autoloader
-    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    runtime: php
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader --no-interaction
+      chmod +x build-render.sh
+      ./build-render.sh
+    startCommand: |
+      php artisan migrate --force
+      php artisan db:seed --force
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
+      php artisan serve --host=0.0.0.0 --port=$PORT
+    healthCheckPath: /
     envVars:
-      - key: APP_KEY
-        value: base64:30lXYAojVz0d2xLrsCAqQ547Q00nxGQGnT5CN5drvgw=
+      - key: APP_NAME
+        value: WebManga Demo
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: false
+      - key: APP_TIMEZONE
+        value: Asia/Bangkok
       - key: DB_CONNECTION
         value: sqlite
       - key: DB_DATABASE
-        value: /tmp/database.sqlite
+        value: /opt/render/project/src/database/database.sqlite
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: SESSION_LIFETIME
+        value: 120
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: info
+      - key: APP_STORAGE_PATH
+        value: /opt/render/project/src/storage
+      - key: USERS_FILE_PATH
+        value: /opt/render/project/src/storage/app/users.json
+      - key: APP_KEY
+        generateValue: true
+    disk:
+      name: webmanga-storage
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 1
