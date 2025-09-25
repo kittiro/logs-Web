@@ -2,19 +2,34 @@
   "version": 2,
   "functions": {
     "api/index.php": { 
-      "runtime": "vercel-php@0.6.0"
+      "runtime": "vercel-php@0.6.0",
+      "maxDuration": 30
     }
   },
   "routes": [
     {
+      "src": "/public/(.*)",
+      "dest": "/public/$1"
+    },
+    {
       "src": "/(css|js|images)/(.*)",
       "dest": "/public/$1/$2"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
     },
     {
       "src": "/(.*)",
       "dest": "/api/index.php"
     }
   ],
+  "build": {
+    "env": {
+      "COMPOSER_CACHE_DIR": "/tmp/.composer"
+    }
+  },
+  "installCommand": "composer install --no-dev --optimize-autoloader",
   "env": {
     "APP_ENV": "production",
     "APP_DEBUG": "false",

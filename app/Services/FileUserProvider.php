@@ -13,7 +13,8 @@ class FileUserProvider implements UserProvider
 
     public function __construct()
     {
-        $this->usersFile = storage_path('app/users.json');
+        // Use environment variable for Vercel compatibility
+        $this->usersFile = $_ENV['USERS_FILE_PATH'] ?? storage_path('app/users.json');
         $this->ensureUsersFileExists();
     }
 
