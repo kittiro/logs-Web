@@ -1,0 +1,144 @@
+{
+  "name": "Error Alert Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "schedule-5min",
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/logs?limit=100",
+        "options": {}
+      },
+      "id": "get-recent-logs",
+      "name": "Get Recent Logs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const logs = $input.item.json.data || [];\n\n// Check for errors (status 500, 404, etc.)\nconst errors = logs.filter(log => {\n  const status = log.status || log.statusCode;\n  return status >= 400;\n});\n\n// Check for suspicious activity\nconst ipCounts = {};\nlogs.forEach(log => {\n  ipCounts[log.ip] = (ipCounts[log.ip] || 0) + 1;\n});\n\nconst suspiciousIPs = Object.entries(ipCounts)\n  .filter(([ip, count]) => count > 20)\n  .map(([ip, count]) => ({ ip, count }));\n\n// Check for failed logins\nconst failedLogins = logs.filter(log => \n  log.url && log.url.includes('login') && log.status >= 400\n);\n\nconst hasIssues = errors.length > 0 || suspiciousIPs.length > 0 || failedLogins.length > 0;\n\nreturn [{\n  json: {\n    hasIssues,\n    errors: errors.slice(0, 5),\n    errorCount: errors.length,\n    suspiciousIPs,\n    failedLogins: failedLogins.slice(0, 5),\n    failedLoginCount: failedLogins.length,\n    totalLogs: logs.length\n  }\n}];"
+      },
+      "id": "analyze-logs",
+      "name": "Analyze for Errors",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.hasIssues }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-issues",
+      "name": "Has Issues?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.item.json;\n\nlet alert = `🚨 การแจ้งเตือน Error\\n`;\nalert += `เวลา: ${new Date().toLocaleString('th-TH')}\\n\\n`;\n\n// Errors\nif (data.errorCount > 0) {\n  alert += `❌ Errors: ${data.errorCount} รายการ\\n`;\n  data.errors.forEach((log, i) => {\n    alert += `${i + 1}. ${log.method} ${log.url}\\n`;\n    alert += `   Status: ${log.status} | IP: ${log.ip}\\n`;\n  });\n  alert += `\\n`;\n}\n\n// Suspicious IPs\nif (data.suspiciousIPs.length > 0) {\n  alert += `⚠️ Suspicious Activity:\\n`;\n  data.suspiciousIPs.forEach((item, i) => {\n    alert += `${i + 1}. IP: ${item.ip} (${item.count} requests)\\n`;\n  });\n  alert += `\\n`;\n}\n\n// Failed logins\nif (data.failedLoginCount > 0) {\n  alert += `🔐 Failed Logins: ${data.failedLoginCount}\\n`;\n  data.failedLogins.forEach((log, i) => {\n    alert += `${i + 1}. IP: ${log.ip} | Time: ${log.timestamp}\\n`;\n  });\n  alert += `\\n`;\n}\n\nalert += `📊 Total logs checked: ${data.totalLogs}`;\n\nreturn [{\n  json: {\n    alert\n  }\n}];"
+      },
+      "id": "format-alert",
+      "name": "Format Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/webhook/line/push",
+        "authentication": "none",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\n  \"userId\": \"{{ $env.LINE_USER_ID }}\",\n  \"message\": \"{{ $json.alert }}\"\n}",
+        "options": {}
+      },
+      "id": "send-alert",
+      "name": "Send LINE Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 200]
+    }
+  ],
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Recent Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent Logs": {
+      "main": [
+        [
+          {
+            "node": "Analyze for Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze for Errors": {
+      "main": [
+        [
+          {
+            "node": "Has Issues?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Issues?": {
+      "main": [
+        [
+          {
+            "node": "Format Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Alert": {
+      "main": [
+        [
+          {
+            "node": "Send LINE Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

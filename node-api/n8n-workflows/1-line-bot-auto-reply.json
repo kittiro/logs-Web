@@ -1,0 +1,277 @@
+{
+  "name": "LINE Bot - Auto Reply",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "line-bot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-line",
+      "name": "Webhook - LINE",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "line-bot-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract LINE event data\nconst events = $input.item.json.body.events || [];\n\nif (events.length === 0) {\n  return [];\n}\n\nconst event = events[0];\nconst message = event.message?.text || '';\nconst replyToken = event.replyToken;\nconst userId = event.source?.userId;\n\nreturn [{\n  json: {\n    message: message.trim().toLowerCase(),\n    replyToken,\n    userId,\n    originalMessage: message\n  }\n}];"
+      },
+      "id": "extract-message",
+      "name": "Extract Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false
+          },
+          "conditions": [
+            {
+              "id": "help-command",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "/help",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "help-command-2",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "help",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "check-command",
+      "name": "Check Command",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/logs/stats",
+        "options": {}
+      },
+      "id": "get-stats",
+      "name": "Get Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/logs?limit=5",
+        "options": {}
+      },
+      "id": "get-logs",
+      "name": "Get Logs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const stats = $input.item.json.data;\nconst replyToken = $('Extract Message').item.json.replyToken;\n\nconst message = `📊 สถิติ Logs (วันนี้)\n\n📈 Total: ${stats.total.toLocaleString()} requests\n👥 Unique IPs: ${stats.uniqueIPs}\n📝 GET: ${stats.methods.GET || 0} | POST: ${stats.methods.POST || 0}`;\n\nreturn [{\n  json: {\n    replyToken,\n    message\n  }\n}];"
+      },
+      "id": "format-stats",
+      "name": "Format Stats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const logs = $input.item.json.data || [];\nconst replyToken = $('Extract Message').item.json.replyToken;\n\nif (logs.length === 0) {\n  return [{\n    json: {\n      replyToken,\n      message: '📝 ไม่พบ logs'\n    }\n  }];\n}\n\nlet message = `📝 Logs ล่าสุด ${logs.length} รายการ:\\n\\n`;\nlogs.slice(0, 5).reverse().forEach((log, index) => {\n  message += `${index + 1}. [${log.timestamp}]\\n`;\n  message += `   ${log.ip} → ${log.method} ${log.url}\\n`;\n  message += `   User: ${log.username}\\n\\n`;\n});\n\nreturn [{\n  json: {\n    replyToken,\n    message: message.trim()\n  }\n}];"
+      },
+      "id": "format-logs",
+      "name": "Format Logs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1050, 400]
+    },
+    {
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.LINE_CHANNEL_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={\n  \"replyToken\": \"{{ $json.replyToken }}\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{{ $json.message }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "reply-line",
+      "name": "Reply to LINE",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true }",
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const replyToken = $input.item.json.replyToken;\nconst message = `📚 คำสั่งที่ใช้ได้:\n\n/stats - สถิติ logs วันนี้\n/logs - logs ล่าสุด 5 รายการ\n/dates - วันที่ที่มี logs\n/help - แสดงคำสั่งนี้`;\n\nreturn [{\n  json: {\n    replyToken,\n    message\n  }\n}];"
+      },
+      "id": "help-message",
+      "name": "Help Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 600]
+    }
+  ],
+  "connections": {
+    "Webhook - LINE": {
+      "main": [
+        [
+          {
+            "node": "Extract Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Message": {
+      "main": [
+        [
+          {
+            "node": "Check Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Command": {
+      "main": [
+        [
+          {
+            "node": "Get Stats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Logs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Help Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats": {
+      "main": [
+        [
+          {
+            "node": "Format Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Logs": {
+      "main": [
+        [
+          {
+            "node": "Format Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Stats": {
+      "main": [
+        [
+          {
+            "node": "Reply to LINE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Logs": {
+      "main": [
+        [
+          {
+            "node": "Reply to LINE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Help Message": {
+      "main": [
+        [
+          {
+            "node": "Reply to LINE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to LINE": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

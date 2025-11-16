@@ -1,0 +1,123 @@
+{
+  "name": "Daily Log Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "schedule-daily",
+      "name": "Schedule - Daily 9 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/logs/stats",
+        "options": {}
+      },
+      "id": "get-stats",
+      "name": "Get Yesterday Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/logs?limit=10",
+        "options": {}
+      },
+      "id": "get-top-logs",
+      "name": "Get Top Logs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 450]
+    },
+    {
+      "parameters": {
+        "jsCode": "const stats = $('Get Yesterday Stats').item.json.data;\nconst logs = $('Get Top Logs').item.json.data || [];\n\n// Format report\nlet report = `📊 รายงานประจำวัน\\n`;\nreport += `วันที่: ${new Date().toLocaleDateString('th-TH')}\\n\\n`;\n\n// Stats\nreport += `📈 สถิติรวม:\\n`;\nreport += `• Total Requests: ${stats.total.toLocaleString()}\\n`;\nreport += `• Unique IPs: ${stats.uniqueIPs}\\n`;\nreport += `• GET: ${stats.methods.GET || 0} | POST: ${stats.methods.POST || 0}\\n\\n`;\n\n// Top URLs\nif (stats.topURLs && Object.keys(stats.topURLs).length > 0) {\n  report += `🔝 Top URLs:\\n`;\n  Object.entries(stats.topURLs).slice(0, 5).forEach(([url, count], i) => {\n    report += `${i + 1}. ${url} (${count})\\n`;\n  });\n  report += `\\n`;\n}\n\n// Top Users\nif (stats.users && Object.keys(stats.users).length > 0) {\n  report += `👥 Top Users:\\n`;\n  Object.entries(stats.users).slice(0, 5).forEach(([user, count], i) => {\n    report += `${i + 1}. ${user} (${count})\\n`;\n  });\n  report += `\\n`;\n}\n\n// Recent activity\nif (logs.length > 0) {\n  report += `⏰ กิจกรรมล่าสุด:\\n`;\n  logs.slice(0, 3).forEach((log, i) => {\n    report += `${i + 1}. ${log.method} ${log.url}\\n`;\n    report += `   IP: ${log.ip} | User: ${log.username}\\n`;\n  });\n}\n\nreturn [{\n  json: {\n    report,\n    stats\n  }\n}];"
+      },
+      "id": "format-report",
+      "name": "Format Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/webhook/line/push",
+        "authentication": "none",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\n  \"userId\": \"{{ $env.LINE_USER_ID }}\",\n  \"message\": \"{{ $json.report }}\"\n}",
+        "options": {}
+      },
+      "id": "send-line-report",
+      "name": "Send LINE Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Schedule - Daily 9 AM": {
+      "main": [
+        [
+          {
+            "node": "Get Yesterday Stats",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Top Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Yesterday Stats": {
+      "main": [
+        [
+          {
+            "node": "Format Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Top Logs": {
+      "main": [
+        [
+          {
+            "node": "Format Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Report": {
+      "main": [
+        [
+          {
+            "node": "Send LINE Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}
