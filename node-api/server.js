@@ -16,9 +16,24 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
-app.use('/api', logRoutes);
-app.use('/', lineRoutes);  // LINE webhook routes
+// Root route - must be before other routes
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Log API Server',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      logs: '/api/logs',
+      stats: '/api/logs/stats',
+      dates: '/api/logs/dates',
+      download: '/api/logs/download',
+      lineWebhook: '/webhook/line',
+      n8nWebhook: '/api/webhook/n8n'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Health check
 app.get('/health', (req, res) => {
@@ -29,6 +44,10 @@ app.get('/health', (req, res) => {
     version: '1.0.0'
   });
 });
+
+// Routes
+app.use('/api', logRoutes);
+app.use('/webhook', lineRoutes);  // LINE webhook routes
 
 // 404 handler
 app.use((req, res) => {

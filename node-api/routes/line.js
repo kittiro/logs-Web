@@ -18,7 +18,7 @@ const client = new line.messagingApi.MessagingApiClient({
 /**
  * Handle LINE webhook events
  */
-router.post('/webhook/line', line.middleware(config), async (req, res) => {
+router.post('/line', line.middleware(config), async (req, res) => {
   try {
     const events = req.body.events;
     
@@ -184,7 +184,7 @@ async function processCommand(message) {
 /**
  * Push message to user (for notifications)
  */
-router.post('/webhook/line/push', async (req, res) => {
+router.post('/line/push', async (req, res) => {
   try {
     const { userId, message } = req.body;
 
