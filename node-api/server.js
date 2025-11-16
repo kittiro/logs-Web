@@ -2,16 +2,15 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const logRoutes = require('./routes/logs');
+const lineRoutes = require('./routes/line');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Request logging
+// Request logging (before body parsers for LINE webhook)
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
@@ -19,6 +18,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api', logRoutes);
+app.use('/', lineRoutes);  // LINE webhook routes
 
 // Health check
 app.get('/health', (req, res) => {
