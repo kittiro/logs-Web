@@ -1,0 +1,93 @@
+{
+  "name": "WebManga Log Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "name": "Schedule Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/logs/stats",
+        "options": {}
+      },
+      "name": "Get Log Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.data.uniqueIPs}}",
+              "operation": "larger",
+              "value2": 50
+            }
+          ]
+        }
+      },
+      "name": "Check if Suspicious",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "text": "⚠️ Alert: Suspicious activity detected!\n\nUnique IPs: {{$json.data.uniqueIPs}}\nTotal Requests: {{$json.data.total}}",
+        "additionalFields": {}
+      },
+      "name": "Send Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [850, 200]
+    }
+  ],
+  "connections": {
+    "Schedule Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Log Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Log Stats": {
+      "main": [
+        [
+          {
+            "node": "Check if Suspicious",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Suspicious": {
+      "main": [
+        [
+          {
+            "node": "Send Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
