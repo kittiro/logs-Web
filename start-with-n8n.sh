@@ -33,6 +33,11 @@ sleep 2
 
 # Start n8n
 echo -e "${PURPLE}🔗 Starting n8n on port 5678...${NC}"
+export N8N_SECURE_COOKIE=false
+export N8N_HOST=localhost
+export N8N_PORT=5678
+export N8N_PROTOCOL=http
+
 if command -v n8n &> /dev/null; then
     n8n start &
     N8N_PID=$!

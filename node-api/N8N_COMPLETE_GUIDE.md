@@ -20,30 +20,46 @@
 
 ## 🚀 ติดตั้ง n8n
 
-### วิธีที่ 1: ใช้ Docker (แนะนำ)
+### วิธีที่ 1: ใช้ Script ที่เตรียมไว้ (แนะนำ)
 
 ```bash
-docker run -it --rm \
-  --name n8n \
-  -p 5678:5678 \
-  -v ~/.n8n:/home/node/.n8n \
-  n8nio/n8n
+cd node-api
+./start-n8n.sh
 ```
 
-### วิธีที่ 2: ใช้ npm
-
-```bash
-npm install -g n8n
-n8n start
-```
-
-### วิธีที่ 3: ใช้ Script ที่เตรียมไว้
+### วิธีที่ 2: รันทุกอย่างพร้อมกัน (Node.js API + Laravel + n8n)
 
 ```bash
 ./start-with-n8n.sh
 ```
 
+### วิธีที่ 3: รัน n8n แบบ Manual
+
+```bash
+# ตั้งค่า environment variables
+export N8N_SECURE_COOKIE=false
+export N8N_HOST=localhost
+export N8N_PORT=5678
+export N8N_PROTOCOL=http
+
+# รัน n8n
+n8n start
+```
+
+### วิธีที่ 4: ใช้ Docker
+
+```bash
+docker run -it --rm \
+  --name n8n \
+  -p 5678:5678 \
+  -e N8N_SECURE_COOKIE=false \
+  -v ~/.n8n:/home/node/.n8n \
+  n8nio/n8n
+```
+
 เปิดเบราว์เซอร์ไปที่: `http://localhost:5678`
+
+**หมายเหตุ:** ถ้าเจอ error เกี่ยวกับ secure cookie ให้ใช้ `http://localhost:5678` แทน `http://127.0.0.1:5678`
 
 ---
 
@@ -298,6 +314,44 @@ ngrok http 5678
 2. ใช้ ngrok หรือ cloudflare tunnel
 3. ตรวจสอบว่า Webhook URL ใน LINE ถูกต้อง
 4. ตรวจสอบว่า Workflow เปิดใช้งาน (Active)
+
+### ปัญหา: Secure Cookie Error
+
+**Error Message:**
+```
+Your n8n server is configured to use a secure cookie, 
+however you are either visiting this via an insecure URL, 
+or using Safari.
+```
+
+**แก้ไข:**
+
+**วิธีที่ 1: ใช้ localhost แทน 127.0.0.1**
+```
+เปิด: http://localhost:5678
+แทน: http://127.0.0.1:5678
+```
+
+**วิธีที่ 2: ตั้งค่า Environment Variable**
+```bash
+export N8N_SECURE_COOKIE=false
+n8n start
+```
+
+**วิธีที่ 3: ใช้ Script ที่เตรียมไว้**
+```bash
+cd node-api
+./start-n8n.sh
+```
+
+**วิธีที่ 4: ถ้าใช้ Docker**
+```bash
+docker run -it --rm \
+  --name n8n \
+  -p 5678:5678 \
+  -e N8N_SECURE_COOKIE=false \
+  n8nio/n8n
+```
 
 ---
 
